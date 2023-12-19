@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/1_Graphics/Sprites/player.png.meta
 guid: 9c114849ec579df4eb9cd407f37ac669
-========
-guid: 2f59ba94578dd3a4cb5d83b8d7e154bd
->>>>>>>> ac750b5d82fe49871df9a2c86d20c1d1b2c8c3d9:Assets/1_Graphics/Sprites/512.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
