@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum ePoolableObjectType
 { 
-    
+    Pixel,
 }
 
 public class Poolable : MonoBehaviour 
