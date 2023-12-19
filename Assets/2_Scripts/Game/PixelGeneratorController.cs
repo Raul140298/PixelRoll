@@ -13,7 +13,7 @@ public class PixelGeneratorController : MonoBehaviour
         // Charging image from file
         var tex = SpriteToTexture2D(imageSprite);
         var pixels = tex.GetPixels();
-        var width = Screen.width;
+        var width = tex.width;
 
         const float pixelSize = 1.0f;
         
