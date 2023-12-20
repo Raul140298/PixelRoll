@@ -1,14 +1,33 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class PixelGeneratorController : MonoBehaviour
 {
+    public static PixelGeneratorController Instance { get; private set; }
+
+    private void Awake()
+    {
+        // Singleton pattern (restricts the instantiation of a class to one object)
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
     [SerializeField] private Sprite imageSprite;
     [SerializeField] private Tilemap imageMap;
     [SerializeField] private Tile tilePixel;
     
     private const float Tolerance = 0.01f;
+    
+    // Creating a dictionary to store the original colors of the pixels
+    private Dictionary<Vector3Int, Color> originalColors = new Dictionary<Vector3Int, Color>();
 
     private void Start()
     {
@@ -26,9 +45,13 @@ public class PixelGeneratorController : MonoBehaviour
 
                 Vector3Int pos = new Vector3Int(x, y);
                 
+                originalColors[pos] = pixelColor;
+                
                 imageMap.SetTile(pos, tilePixel);
                 imageMap.SetTileFlags(pos, TileFlags.None);
-                imageMap.SetColor(pos, pixelColor);
+                
+                // Setting the color to white
+                imageMap.SetColor(pos, Color.white);
             }
         }
     }
@@ -46,5 +69,17 @@ public class PixelGeneratorController : MonoBehaviour
         newText.Apply();
         
         return newText;
+    }
+    
+    public Color GetOriginalColor(Vector3Int position)
+    {
+        // Checking if the position is in the dictionary
+        if (originalColors.ContainsKey(position))
+        {
+            return originalColors[position];
+        }
+        
+        // Returning white if the position is not in the dictionary
+        return Color.white;
     }
 }
