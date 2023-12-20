@@ -1,16 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 using Game;
-
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class GameInputController : MonoBehaviour
 {
-    public static GameInputController Instance { get; private set; }
-
+    private static GameInputController Instance { get; set; }
+    
+    private int RemainingClicks { get; set; }
+    
+    private void SetMaxPixels(int maxPixels)
+    {
+        RemainingClicks = maxPixels;
+    }
+    
     private void Awake()
     {
         // Singleton pattern
@@ -25,7 +27,13 @@ public class GameInputController : MonoBehaviour
     }
     
     [SerializeField] private PixelGeneratorController pixelGeneratorController;
-    
+
+    public void Start()
+    {
+        // Testing the max pixels
+        GameInputController.Instance.SetMaxPixels(5);
+    }
+
     private void Update()
     {
         CheckPlayerClick();
@@ -33,7 +41,14 @@ public class GameInputController : MonoBehaviour
 
     private void CheckPlayerClick()
     {
-        if(Input.GetMouseButton(0))
+        // Checking if there are no remaining clicks
+        if (RemainingClicks <= 0)
+        {
+            return;
+        }
+        
+        // Checking if the player has clicked once
+        if(Input.GetMouseButtonDown(0)) 
         {
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var tpos = GameController.Instance.TileMap.WorldToCell(worldPoint);
@@ -48,6 +63,9 @@ public class GameInputController : MonoBehaviour
                 GameController.Instance.TileMap.SetColor(tpos, originalColor);
                 
                 Debug.Log(GameController.Instance.TileMap.GetColor(tpos));
+                
+                // Decreasing the number of remaining clicks
+                RemainingClicks--;
             }
         }
     }
