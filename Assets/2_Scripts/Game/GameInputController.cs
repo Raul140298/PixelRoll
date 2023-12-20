@@ -56,15 +56,22 @@ public class GameInputController : MonoBehaviour
 
             if(tile)
             {
-                // Retrieving the original color of the pixel from the PixelGeneratorController
-                Color originalColor = PixelGeneratorController.Instance.GetOriginalColor(tpos);
+                // Retrieving the original color of the pixel from the Pixels array
+                var width = PixelGeneratorController.Instance.imageSprite.texture.width;
+                var index = tpos.y * width + tpos.x;
 
-                // Applying the original color to the pixel in the image
-                GameController.Instance.TileMap.SetColor(tpos, originalColor);
+                // Checking if the pixel is transparent and skipping it
+                if (PixelGeneratorController.Instance.Pixels[index].a == 0) return;
                 
+                // Applying the original color to the pixel
+                GameController.Instance.TileMap.SetColor(tpos, PixelGeneratorController.Instance.Pixels[index]);
+            
                 Debug.Log(GameController.Instance.TileMap.GetColor(tpos));
-                
-                // Decreasing the number of remaining clicks
+
+                // Changing the pixel color in the array to transparent
+                PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0));
+
+                // Decreasing the remaining clicks
                 RemainingClicks--;
             }
         }

@@ -20,32 +20,32 @@ public class PixelGeneratorController : MonoBehaviour
         }
     }
     
-    [SerializeField] private Sprite imageSprite;
+    [SerializeField] public Sprite imageSprite;
     [SerializeField] private Tilemap imageMap;
     [SerializeField] private Tile tilePixel;
     
+    // Making pixels a public array so that we can read it from other scripts
+    public Color[] Pixels { get; private set; }
+    
     private const float Tolerance = 0.01f;
     
-    // Creating a dictionary to store the original colors of the pixels
-    private Dictionary<Vector3Int, Color> originalColors = new Dictionary<Vector3Int, Color>();
 
     private void Start()
     {
         Texture2D tex = SpriteToTexture2D(imageSprite);
-        Color[] pixels = tex.GetPixels();
+        Pixels = tex.GetPixels();
         int width = tex.width;
 
         for (int y = tex.height - 1; y >= 0; y--)
         {
             for (int x = 0; x < width; x++)
             {
-                Color pixelColor = pixels[y * width + x];
-
+                Color pixelColor = Pixels[y * width + x];
+                
+                // Checking if the pixel is transparent and skipping it
                 if (pixelColor.a == 0) continue;
 
                 Vector3Int pos = new Vector3Int(x, y);
-                
-                originalColors[pos] = pixelColor;
                 
                 imageMap.SetTile(pos, tilePixel);
                 imageMap.SetTileFlags(pos, TileFlags.None);
@@ -71,15 +71,12 @@ public class PixelGeneratorController : MonoBehaviour
         return newText;
     }
     
-    public Color GetOriginalColor(Vector3Int position)
+    public void SetPixelColor(int index, Color color)
     {
-        // Checking if the position is in the dictionary
-        if (originalColors.ContainsKey(position))
+        // Checking if the index is within the array bounds
+        if (index >= 0 && index < Pixels.Length)
         {
-            return originalColors[position];
+            Pixels[index] = color;
         }
-        
-        // Returning white if the position is not in the dictionary
-        return Color.white;
     }
 }
