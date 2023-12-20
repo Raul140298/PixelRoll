@@ -35,6 +35,9 @@ public class PixelGeneratorController : MonoBehaviour
         Texture2D tex = SpriteToTexture2D(imageSprite);
         Pixels = tex.GetPixels();
         int width = tex.width;
+        
+        // Centering the image map to the camera
+        CenterImageMapToScreen(width, tex.height);
 
         for (int y = tex.height - 1; y >= 0; y--)
         {
@@ -78,5 +81,20 @@ public class PixelGeneratorController : MonoBehaviour
         {
             Pixels[index] = color;
         }
+    }
+    
+    private void CenterImageMapToScreen(int width, int height)
+    {
+        // Checking if the main camera exists
+        if (Camera.main == null) return;
+        
+        // Calculating the center of the screen in world coordinates
+        var worldCenter = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, 
+            Screen.height / 2, Camera.main.nearClipPlane));
+
+        // Adjusting the position of the Tilemap to the center of the screen
+        var transform1 = imageMap.transform;
+        transform1.position = new Vector3(worldCenter.x - width / 2, worldCenter.y - height / 2, 
+            transform1.position.z);
     }
 }

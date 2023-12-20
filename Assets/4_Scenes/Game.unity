@@ -578,6 +578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 759584878bcb4a147a92c53a758666f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pixelGeneratorController: {fileID: 0}
 --- !u!1 &1069745551
 GameObject:
   m_ObjectHideFlags: 0
