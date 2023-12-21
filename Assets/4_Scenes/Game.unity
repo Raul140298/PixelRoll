@@ -481,7 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eed382e9ac6a63440a77cdf8a9639fe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSprite: {fileID: 21300000, guid: 9c114849ec579df4eb9cd407f37ac669, type: 3}
+  imageSprite: {fileID: 21300000, guid: bba06cf160e1ff945892095dccb3b41a, type: 3}
   imageMap: {fileID: 1603878151}
   tilePixel: {fileID: 11400000, guid: e85dbf484f4eccb4ca9a0c5ce53fd94d, type: 2}
 --- !u!4 &536495881

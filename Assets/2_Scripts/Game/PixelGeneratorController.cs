@@ -91,14 +91,14 @@ public class PixelGeneratorController : MonoBehaviour
         // Scaling the image to take up 80% of the camera's width and 100% of its height
         var scaleFactor = ScaleImageToCameraWidth(width, height);
 
-        // Calculating the center of the screen in world coordinates
-        var worldCenter = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, 
+        // Calculating the right edge of the screen in world coordinates
+        var worldRightEdge = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 
             Screen.height / 2, Camera.main.nearClipPlane));
 
-        // Adjusting the position of the Tilemap to the center of the screen
+        // Adjusting the position of the Tilemap to align with the right edge of the screen
         var transform1 = imageMap.transform;
         var scaledWidth = width * scaleFactor;
-        transform1.position = new Vector3(worldCenter.x - scaledWidth / 2, worldCenter.y - height * scaleFactor / 2, 
+        transform1.position = new Vector3(worldRightEdge.x - scaledWidth, worldRightEdge.y - height * scaleFactor / 2, 
             transform1.position.z);
     }
     private float ScaleImageToCameraWidth(int width, int height)
