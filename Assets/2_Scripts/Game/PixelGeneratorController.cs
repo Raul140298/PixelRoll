@@ -88,13 +88,49 @@ public class PixelGeneratorController : MonoBehaviour
         // Checking if the main camera exists
         if (Camera.main == null) return;
         
+        // Scaling the image to take up 80% of the camera's width and 100% of its height
+        var scaleFactor = ScaleImageToCameraWidth(width, height);
+
         // Calculating the center of the screen in world coordinates
         var worldCenter = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, 
             Screen.height / 2, Camera.main.nearClipPlane));
 
         // Adjusting the position of the Tilemap to the center of the screen
         var transform1 = imageMap.transform;
-        transform1.position = new Vector3(worldCenter.x - width / 2, worldCenter.y - height / 2, 
+        var scaledWidth = width * scaleFactor;
+        transform1.position = new Vector3(worldCenter.x - scaledWidth / 2, worldCenter.y - height * scaleFactor / 2, 
             transform1.position.z);
     }
+    private float ScaleImageToCameraWidth(int width, int height)
+    {
+        float cameraWidth, cameraHeight;
+        
+        //Checking if the camera is orthographic (the view is a parallel projection onto the view plane)
+        if (Camera.main.orthographic)
+        {
+            // Calculating the world width of the camera's view
+            var main = Camera.main;
+            cameraWidth = main.orthographicSize * 2 * main.aspect;
+            cameraHeight = main.orthographicSize * 2;
+        }
+        else
+        {
+            // Calculating the distance between the camera and the image
+            var distance = Mathf.Abs(imageMap.transform.position.z - Camera.main.transform.position.z);
+            // Calculating the world width of the camera's view
+            cameraWidth = 2.0f * distance * Mathf.Tan(Camera.main.fieldOfView * 0.5f * Mathf.Deg2Rad);
+            cameraHeight = cameraWidth / Camera.main.aspect;
+        }
+        
+        var scaleFactorWidth = cameraWidth / width * 0.8f;
+        var scaleFactorHeight = cameraHeight / height;
+
+        // Using the smaller of the two scale factors
+        var scaleFactor = Mathf.Min(scaleFactorWidth, scaleFactorHeight);
+
+        // Applying the scale factor to the image's transform
+        imageMap.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1);
+
+        return scaleFactor;
+    }    
 }
