@@ -10,6 +10,7 @@ public static class DiceHelper
         if (faces < 3)
         {
             Debug.LogError("The dice must have at least 3 faces");
+            return 0;
         }
         
         var result = Random.Range(1, faces + 1);

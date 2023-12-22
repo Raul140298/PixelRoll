@@ -1,44 +1,64 @@
 using Game;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 public class GameInputController : MonoBehaviour
 {
-    private static GameInputController Instance { get; set; }
-    
-    private int RemainingClicks { get; set; }
-    
-    private void SetMaxPixels(int maxPixels)
+    [SerializeField] private GameUIController gameUIController;
+    private static GameInputController _instance;
+    // Singleton pattern (restricts the instantiation of a class to one object)
+    public static GameInputController Instance
     {
-        RemainingClicks = maxPixels;
+        get
+        {
+            // Checking if the instance is not null
+            if (_instance != null) return _instance;
+            // Finding the instance in the scene
+            _instance = FindObjectOfType<GameInputController>();
+            // Checking if the instance is not null
+            if (_instance != null) return _instance;
+            // Creating a new instance
+            var go = new GameObject
+            {
+                name = "GameInputController"
+            };
+            // Adding the GameInputController component to the instance
+            _instance = go.AddComponent<GameInputController>();
+
+            return _instance;
+        }
+        // Making the setter private so that the instance can only be set from inside the class
+        private set => throw new System.NotImplementedException();
     }
+
+    private int RemainingClicks { get; set; }
     
     private void Awake()
     {
-        // Singleton pattern
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        // Checking if the instance is not null
+        if (Instance != null) return;
+        
+        // Setting the instance to this object
+        Instance = this;
+        RemainingClicks = 0;
+        OnAllClicksUsed = new UnityEvent();
     }
     
-    [SerializeField] private PixelGeneratorController pixelGeneratorController;
-
-    public void Start()
+    public void SetMaxPixels(int maxPixels)
     {
-        // Testing the max pixels
-        GameInputController.Instance.SetMaxPixels(5);
+        RemainingClicks = maxPixels;
     }
 
     private void Update()
     {
+        // Checking if the player has clicked
         CheckPlayerClick();
     }
 
+    // Creating an event that will be invoked when all clicks are used
+    public UnityEvent OnAllClicksUsed;
+    
     private void CheckPlayerClick()
     {
         // Checking if there are no remaining clicks
@@ -48,7 +68,7 @@ public class GameInputController : MonoBehaviour
         }
         
         // Checking if the player has clicked once
-        if(Input.GetMouseButtonDown(0)) 
+        if(Input.GetMouseButton(0)) 
         {
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var tpos = GameController.Instance.TileMap.WorldToCell(worldPoint);
@@ -73,6 +93,11 @@ public class GameInputController : MonoBehaviour
 
                 // Decreasing the remaining clicks
                 RemainingClicks--;
+            }
+            // If no more clicks are remaining, invoke the OnAllClicksUsed event
+            if (RemainingClicks <= 0)
+            {
+                gameUIController.RestartButtons();
             }
         }
     }
