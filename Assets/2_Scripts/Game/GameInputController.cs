@@ -7,6 +7,7 @@ public class GameInputController : MonoBehaviour
 {
     [SerializeField] private GameUIController gameUIController;
     private static GameInputController _instance;
+    
     // Singleton pattern (restricts the instantiation of a class to one object)
     public static GameInputController Instance
     {

@@ -11,9 +11,14 @@ public class GameUIController : MonoBehaviour
     public GameObject[] diceObjects;
     private int _selectedDiceFaces;
     public TMPro.TextMeshProUGUI resultText;
+    [SerializeField] private int maxRolls = 3;
+    private int _currentRolls;
     
     private void Awake()
     {
+        // Initializing the counter in the Awake method
+        _currentRolls = maxRolls;
+        
         // Adding a listener to the OnAllClicksUsed event
         if (GameInputController.Instance != null)
         {
@@ -56,16 +61,27 @@ public class GameUIController : MonoBehaviour
 
     private void OnPickDiceClick()
     {
-        // Getting a random number of faces from the dices array
-        _selectedDiceFaces = GetRandomDiceFace();
-        Debug.Log("Selected dice faces: " + _selectedDiceFaces);
+        // Checking if the player can still roll the dice
+        if (_currentRolls > 0)
+        {
+            // Getting a random number of faces from the dices array
+            _selectedDiceFaces = GetRandomDiceFace();
+            Debug.Log("Selected dice faces: " + _selectedDiceFaces);
 
-        // Showing the corresponding dice
-        ShowDice(_selectedDiceFaces);
+            // Showing the corresponding dice
+            ShowDice(_selectedDiceFaces);
 
-        // Deactivating the "Pick Dice" button and activating the "Roll Dice" button
-        pickDice.gameObject.SetActive(false);
-        rollDice.gameObject.SetActive(true);
+            // Deactivating the "Pick Dice" button and activating the "Roll Dice" button
+            pickDice.gameObject.SetActive(false);
+            rollDice.gameObject.SetActive(true);
+
+            // Decrementing the counter
+            _currentRolls--;
+        }
+        else
+        {
+            Debug.Log("You have reached the maximum number of rolls.");
+        }
     }
 
     private void OnRollDiceClick()
