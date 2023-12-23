@@ -6,6 +6,10 @@ using UnityEngine.Tilemaps;
 public class PixelGeneratorController : MonoBehaviour
 {
     public static PixelGeneratorController Instance { get; private set; }
+    public int PaintedPixels { get; set; }
+    [SerializeField] public Sprite imageSprite;
+    [SerializeField] private Tilemap imageMap;
+    [SerializeField] private Tile tilePixel;
 
     private void Awake()
     {
@@ -19,10 +23,6 @@ public class PixelGeneratorController : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
-    [SerializeField] public Sprite imageSprite;
-    [SerializeField] private Tilemap imageMap;
-    [SerializeField] private Tile tilePixel;
     
     // Making pixels a public array so that we can read it from other scripts
     public Color[] Pixels { get; private set; }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameUIController : MonoBehaviour
@@ -12,12 +13,14 @@ public class GameUIController : MonoBehaviour
     private int _selectedDiceFaces;
     public TMPro.TextMeshProUGUI resultText;
     [SerializeField] private int maxRolls = 3;
-    private int _currentRolls;
+    public int currentRolls;
+    public GameObject gameOverObject;
+    public TMPro.TextMeshProUGUI gameOverPercentageText;
     
     private void Awake()
     {
         // Initializing the counter in the Awake method
-        _currentRolls = maxRolls;
+        currentRolls = maxRolls;
         
         // Adding a listener to the OnAllClicksUsed event
         if (GameInputController.Instance != null)
@@ -62,7 +65,7 @@ public class GameUIController : MonoBehaviour
     private void OnPickDiceClick()
     {
         // Checking if the player can still roll the dice
-        if (_currentRolls > 0)
+        if (currentRolls > 0)
         {
             // Getting a random number of faces from the dices array
             _selectedDiceFaces = GetRandomDiceFace();
@@ -76,7 +79,7 @@ public class GameUIController : MonoBehaviour
             rollDice.gameObject.SetActive(true);
 
             // Decrementing the counter
-            _currentRolls--;
+            currentRolls--;
         }
         else
         {
@@ -144,5 +147,17 @@ public class GameUIController : MonoBehaviour
 
         // Deactivating the result text
         resultText.gameObject.SetActive(false);
+    }
+    public void ShowGameOver()
+    {
+        // Calculating the percentage of pixels painted
+        var percentage = (float)PixelGeneratorController.Instance.PaintedPixels / (float)
+            PixelGeneratorController.Instance.Pixels.Length * 100f;
+
+        // Updating the game over percentage text
+        gameOverPercentageText.text = "Has pintado el " + percentage.ToString("0.00") + "% de la imagen.";
+
+        // Activating the game over object
+        gameOverObject.SetActive(true);
     }
 }

@@ -88,6 +88,9 @@ public class GameInputController : MonoBehaviour
                 GameController.Instance.TileMap.SetColor(tpos, PixelGeneratorController.Instance.Pixels[index]);
             
                 Debug.Log(GameController.Instance.TileMap.GetColor(tpos));
+                
+                // Incrementing PaintedPixels
+                PixelGeneratorController.Instance.PaintedPixels++;
 
                 // Changing the pixel color in the array to transparent
                 PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0));
@@ -96,9 +99,16 @@ public class GameInputController : MonoBehaviour
                 RemainingClicks--;
             }
             // If no more clicks are remaining, invoke the OnAllClicksUsed event
-            if (RemainingClicks <= 0)
+            if (RemainingClicks > 0) return;
+            
+            // Restarting the pick button
+            gameUIController.RestartButtons();
+            
+            // Checking if the player has used all rolls
+            if (gameUIController.currentRolls == 0)
             {
-                gameUIController.RestartButtons();
+                // Activating the game over object
+                gameUIController.ShowGameOver();
             }
         }
     }
