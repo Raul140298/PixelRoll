@@ -1,3 +1,4 @@
+using System.Linq;
 using Game;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,7 +10,6 @@ public class GameInputController : MonoBehaviour
     private static GameInputController _instance;
     private bool isClicking = false;
     private int _mode = 0;
-
     
     // Singleton pattern (restricts the instantiation of a class to one object)
     public static GameInputController Instance
@@ -81,7 +81,7 @@ public class GameInputController : MonoBehaviour
             // Calculating the tile position from the mouse click
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var tpos = GameController.Instance.TileMap.WorldToCell(worldPoint);
-            _mode = 1;
+            _mode = 2;
             
             // Selecting the paint mode
             SelectPaintMode(tpos, _mode);
@@ -123,7 +123,7 @@ public class GameInputController : MonoBehaviour
     private static void ManagePixels(Vector3Int tpos, int width)
     {
         var index = tpos.y * width + tpos.x;
-        if (PixelGeneratorController.Instance.Pixels[index].a == 0) return;
+        if (PixelGeneratorController.Instance.Pixels[index].a == 0)return;
         GameController.Instance.TileMap.SetColor(tpos, PixelGeneratorController.Instance.Pixels[index]);
         PixelGeneratorController.Instance.PaintedPixels++;
         PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0));
@@ -180,6 +180,8 @@ public class GameInputController : MonoBehaviour
         }
         RemainingClicks--;
         isClicking = true;
+        // Checking if the game is over
+        CheckGameOver();
     }
 
     private void PaintRow(Vector3Int position)
@@ -205,5 +207,16 @@ public class GameInputController : MonoBehaviour
         }
         RemainingClicks--;
         isClicking = true;
+        // Checking if the game is over
+        CheckGameOver();
+    }
+    
+    private void CheckGameOver()
+    {
+        // Checking if all pixels have been painted
+        if (PixelGeneratorController.Instance.PaintedPixels == PixelGeneratorController.Instance.Pixels.Length)
+        {
+            gameUIController.ShowGameOver();
+        }
     }
 }
