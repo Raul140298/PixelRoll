@@ -152,7 +152,7 @@ public class GameUIController : MonoBehaviour
     {
         // Calculating the percentage of pixels painted
         var percentage = (float)PixelGeneratorController.Instance.PaintedPixels / (float)
-            PixelGeneratorController.Instance.Pixels.Length * 100f;
+            PixelGeneratorController.Instance.NonTransparentPixels * 100f;
 
         // Updating the game over percentage text
         gameOverPercentageText.text = "Has pintado el " + percentage.ToString("0.00") + "% de la imagen.";

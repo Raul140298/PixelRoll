@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,6 +11,7 @@ public class PixelGeneratorController : MonoBehaviour
     [SerializeField] public Sprite imageSprite;
     [SerializeField] private Tilemap imageMap;
     [SerializeField] private Tile tilePixel;
+    public int NonTransparentPixels { get; private set; }
 
     private void Awake()
     {
@@ -28,7 +30,6 @@ public class PixelGeneratorController : MonoBehaviour
     public Color[] Pixels { get; private set; }
     
     private const float Tolerance = 0.01f;
-    
 
     private void Start()
     {
@@ -38,6 +39,9 @@ public class PixelGeneratorController : MonoBehaviour
         
         // Centering the image map to the camera
         CenterImageMapToScreen(width, tex.height);
+        
+        // Counting the non-transparent pixels
+        NonTransparentPixels = Pixels.Count(pixel => pixel.a != 0);
 
         for (int y = tex.height - 1; y >= 0; y--)
         {

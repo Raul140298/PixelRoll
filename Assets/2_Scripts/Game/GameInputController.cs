@@ -214,7 +214,7 @@ public class GameInputController : MonoBehaviour
     private void CheckGameOver()
     {
         // Checking if all pixels have been painted
-        if (PixelGeneratorController.Instance.PaintedPixels == PixelGeneratorController.Instance.Pixels.Length)
+        if (PixelGeneratorController.Instance.PaintedPixels == PixelGeneratorController.Instance.NonTransparentPixels)
         {
             gameUIController.ShowGameOver();
         }
