@@ -92,7 +92,7 @@ public class PixelGeneratorController : MonoBehaviour
         // Checking if the main camera exists
         if (Camera.main == null) return;
         
-        // Scaling the image to take up 80% of the camera's width and 100% of its height
+        // Scaling the image to take up to 80% of the camera's width or 90% of its height
         var scaleFactor = ScaleImageToCameraWidth(width, height);
 
         // Calculating the right edge of the screen in world coordinates
@@ -102,9 +102,13 @@ public class PixelGeneratorController : MonoBehaviour
         // Adjusting the position of the Tilemap to align with the right edge of the screen
         var transform1 = imageMap.transform;
         var scaledWidth = width * scaleFactor;
-        transform1.position = new Vector3(worldRightEdge.x - scaledWidth, worldRightEdge.y - height * scaleFactor / 2, 
-            transform1.position.z);
+
+        // Adding a small margin to the right edge
+        const float marginRight = 0.1f;
+        transform1.position = new Vector3(worldRightEdge.x - scaledWidth - marginRight, worldRightEdge.y - 
+            height * scaleFactor / 2, transform1.position.z);
     }
+    
     private float ScaleImageToCameraWidth(int width, int height)
     {
         float cameraWidth, cameraHeight;
@@ -127,7 +131,7 @@ public class PixelGeneratorController : MonoBehaviour
         }
         
         var scaleFactorWidth = cameraWidth / width * 0.8f;
-        var scaleFactorHeight = cameraHeight / height;
+        var scaleFactorHeight = (cameraHeight / height) * 0.9f;
 
         // Using the smaller of the two scale factors
         var scaleFactor = Mathf.Min(scaleFactorWidth, scaleFactorHeight);
