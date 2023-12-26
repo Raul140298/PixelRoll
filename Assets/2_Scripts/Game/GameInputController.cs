@@ -8,7 +8,7 @@ public class GameInputController : MonoBehaviour
 {
     [SerializeField] private GameUIController gameUIController;
     private static GameInputController _instance;
-    private bool isClicking = false;
+    private bool _isClicking = false;
     private int _mode = 0;
     
     // Singleton pattern (restricts the instantiation of a class to one object)
@@ -60,7 +60,7 @@ public class GameInputController : MonoBehaviour
         CheckPlayerClick();
         
         // Checking if the player has released the mouse button
-        if (!Input.GetMouseButton(0)) isClicking = false;
+        if (!Input.GetMouseButton(0)) _isClicking = false;
     }
 
     // Creating an event that will be invoked when all clicks are used
@@ -160,26 +160,38 @@ public class GameInputController : MonoBehaviour
     private void PaintColumn(Vector3Int position)
     {
         // Checking if the mouse button is still being held down and we've already processed a click
-        if (isClicking && Input.GetMouseButton(0)) return;
+        if (_isClicking && Input.GetMouseButton(0)) return;
         
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
+        var painted = false;
+        
+        // Checking if the clicked position is within the image boundaries
+        if (position.x < 0 || position.x >= width || position.y < 0 || position.y >= height) return;
+
+        var initialPixelIndex = position.y * width + position.x;
+    
+        // Checking if the initially clicked pixel is transparent and skipping it
+        if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a == 0) return;
         
         // Iterating through the column
-        for (int i = 0; i < height; i++)
+        for (var i = 0; i < height; i++)
         {
             var tpos = new Vector3Int(position.x, i, position.z);
             var tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
 
             //Checking if the tile is not null
-            if (tile)
-            {
-                // Managing the pixel array and the tilemap
-                ManagePixels(tpos, width);
-            }
+            if (!tile) continue;
+            
+            // Managing the pixel array and the tilemap
+            ManagePixels(tpos, width);
+            painted = true;
         }
-        RemainingClicks--;
-        isClicking = true;
+        // Checking if a column was painted and decrementing the remaining clicks
+        if (painted) RemainingClicks--;
+        
+        _isClicking = true;
+        
         // Checking if the game is over
         CheckGameOver();
     }
@@ -187,26 +199,37 @@ public class GameInputController : MonoBehaviour
     private void PaintRow(Vector3Int position)
     {
         // Checking if the mouse button is still being held down and we've already processed a click
-        if (isClicking && Input.GetMouseButton(0)) return;
+        if (_isClicking && Input.GetMouseButton(0)) return;
         
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
+        var painted = false;
+        
+        // Checking if the clicked position is within the image boundaries
+        if (position.x < 0 || position.x >= width || position.y < 0 || position.y >= height) return;
 
+        var initialPixelIndex = position.y * width + position.x;
+    
+        // Checking if the initially clicked pixel is transparent and skipping it
+        if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a == 0) return;
+        
         // Iterating through the row
-        for (int i = 0; i < width; i++)
+        for (var i = 0; i < width; i++)
         {
             var tpos = new Vector3Int(i, position.y, position.z);
             Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
 
             // Checking if the tile is not null
-            if (tile)
-            {
-                // Managing the pixel array and the tilemap
-                ManagePixels(tpos, width);
-            }
+            if (!tile) continue;
+            
+            // Managing the pixel array and the tilemap
+            ManagePixels(tpos, width);
+            painted = true;
         }
-        RemainingClicks--;
-        isClicking = true;
+        // Checking if a column was painted and decrementing the remaining clicks
+        if (painted) RemainingClicks--;
+        
+        _isClicking = true;
         // Checking if the game is over
         CheckGameOver();
     }
