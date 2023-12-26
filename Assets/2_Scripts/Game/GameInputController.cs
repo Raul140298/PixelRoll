@@ -8,8 +8,8 @@ public class GameInputController : MonoBehaviour
 {
     [SerializeField] private GameUIController gameUIController;
     private static GameInputController _instance;
-    private bool _isClicking = false;
     private int _mode = 0;
+    private int RemainingClicks { get; set; }
     
     // Singleton pattern (restricts the instantiation of a class to one object)
     public static GameInputController Instance
@@ -35,8 +35,6 @@ public class GameInputController : MonoBehaviour
         // Making the setter private so that the instance can only be set from inside the class
         private set => throw new System.NotImplementedException();
     }
-
-    private int RemainingClicks { get; set; }
     
     private void Awake()
     {
@@ -58,9 +56,6 @@ public class GameInputController : MonoBehaviour
     {
         // Checking if the player has clicked
         CheckPlayerClick();
-        
-        // Checking if the player has released the mouse button
-        if (!Input.GetMouseButton(0)) _isClicking = false;
     }
 
     // Creating an event that will be invoked when all clicks are used
@@ -159,8 +154,6 @@ public class GameInputController : MonoBehaviour
 
     private void PaintColumn(Vector3Int position)
     {
-        // Checking if the mouse button is still being held down and we've already processed a click
-        if (_isClicking && Input.GetMouseButton(0)) return;
         
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
@@ -190,17 +183,12 @@ public class GameInputController : MonoBehaviour
         // Checking if a column was painted and decrementing the remaining clicks
         if (painted) RemainingClicks--;
         
-        _isClicking = true;
-        
         // Checking if the game is over
         CheckGameOver();
     }
 
     private void PaintRow(Vector3Int position)
     {
-        // Checking if the mouse button is still being held down and we've already processed a click
-        if (_isClicking && Input.GetMouseButton(0)) return;
-        
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
         var painted = false;
@@ -229,7 +217,6 @@ public class GameInputController : MonoBehaviour
         // Checking if a column was painted and decrementing the remaining clicks
         if (painted) RemainingClicks--;
         
-        _isClicking = true;
         // Checking if the game is over
         CheckGameOver();
     }

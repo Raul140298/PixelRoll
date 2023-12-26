@@ -148,6 +148,7 @@ public class GameUIController : MonoBehaviour
         // Deactivating the result text
         resultText.gameObject.SetActive(false);
     }
+    
     public void ShowGameOver()
     {
         // Calculating the percentage of pixels painted
