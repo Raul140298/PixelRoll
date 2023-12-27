@@ -104,8 +104,8 @@ public class PixelGeneratorController : MonoBehaviour
         var scaledWidth = width * scaleFactor;
 
         // Adding a small margin to the right edge
-        const float marginRight = 0.1f;
-        transform1.position = new Vector3(worldRightEdge.x - scaledWidth - marginRight, worldRightEdge.y - 
+        const float rightMargin = 0.4f;
+        transform1.position = new Vector3(worldRightEdge.x - scaledWidth - rightMargin, worldRightEdge.y - 
             height * scaleFactor / 2, transform1.position.z);
     }
     
