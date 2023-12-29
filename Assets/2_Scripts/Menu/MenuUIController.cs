@@ -21,6 +21,15 @@ public class MenuUIController : MonoBehaviour
 
     private void OnMenuPlayBtnPressed()
     {
+        StartCoroutine(CRTMenuPlayBtnPressed());
+    }
+
+    IEnumerator CRTMenuPlayBtnPressed()
+    {
+        Feedback.Do(eFeedbackType.Punch);
+
+        yield return new WaitForSeconds(0.5f);
+        
         SceneLoader.Instance.SetTargetScreen(eScreen.Game);
         SceneLoader.Instance.ChangeScreen(eScreen.Loading, true);
     }

@@ -4,9 +4,16 @@
     {
         switch (type)
         {
-			case eFeedbackType.ButtonClick:
-			case eFeedbackType.ButtonHover:	
+			case eFeedbackType.RollDice:
+			case eFeedbackType.Punch:
+			case eFeedbackType.Punch2:
+			case eFeedbackType.Piano:
 				SFXPlayer.PlaySFX(type);
+				break;
+			
+			case eFeedbackType.Menu:
+			case eFeedbackType.Juego:
+				SFXPlayer.PlayBGM(type);
 				break;
         }
     }

@@ -42,6 +42,10 @@ public enum eDirection
 // IN CASE OF SUCCESS, SOUND EFFECT EXISTS.
 public enum eFeedbackType
 { 
-    ButtonHover,
-    ButtonClick
+    RollDice,
+    Punch,
+    Punch2,
+    Menu,
+    Juego,
+    Piano,
 }

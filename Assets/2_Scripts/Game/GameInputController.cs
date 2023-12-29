@@ -2,13 +2,15 @@ using Game;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Tilemaps;
+using DG.Tweening;
 
 public class GameInputController : MonoBehaviour
 {
     [SerializeField] private GameUIController gameUIController;
     private static GameInputController _instance;
     public int mode = 0;
-    private int RemainingClicks { get; set; }
+    public int lastMode = 0;
+    public int RemainingClicks;
     
     // Singleton pattern (restricts the instantiation of a class to one object)
     public static GameInputController Instance
@@ -111,12 +113,6 @@ public class GameInputController : MonoBehaviour
             case 4:
                 Fill(tpos);
                 break;
-            case 5:
-                ShakeImage();
-                break;
-            case 6:
-                UnpaintRandomly();
-                break;
             default:
                 return;
         }
@@ -147,9 +143,12 @@ public class GameInputController : MonoBehaviour
         
     }
     
-    private static void ShakeImage()
+    public void ShakeImage()
     {
+        GameController.Instance.TileMap.gameObject.transform.DOShakePosition(1, Vector3.up);
         
+        // Restarting the pick button
+        gameUIController.RestartButtons();
     }
     
     private void PaintPixel(Vector3Int tpos)
@@ -162,6 +161,8 @@ public class GameInputController : MonoBehaviour
             var width = PixelGeneratorController.Instance.imageSprite.texture.width;
 
             if (!ManagePixels(tpos, width)) return;
+            
+            Feedback.Do(eFeedbackType.Piano);
             
             RemainingClicks--;
         }
@@ -209,7 +210,11 @@ public class GameInputController : MonoBehaviour
         }
         
         // Checking if a column was painted and decrementing the remaining clicks
-        if (painted) RemainingClicks--;
+        if (painted)
+        {
+            Feedback.Do(eFeedbackType.Piano);
+            RemainingClicks--;
+        }
         
         // Checking if the game is over
         CheckGameOver();
@@ -257,13 +262,17 @@ public class GameInputController : MonoBehaviour
         }
         
         // Checking if a column was painted and decrementing the remaining clicks
-        if (painted) RemainingClicks--;
+        if (painted)
+        {
+            Feedback.Do(eFeedbackType.Piano);
+            RemainingClicks--;
+        }
         
         // Checking if the game is over
         CheckGameOver();
     }
     
-    private void UnpaintRandomly()
+    public void UnpaintRandomly()
     {
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
@@ -273,13 +282,46 @@ public class GameInputController : MonoBehaviour
             Vector3Int tpos = new Vector3Int(Random.Range(0, width), Random.Range(0, height));
             Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
             var index = tpos.y * width + tpos.x;
+
+            if (PixelGeneratorController.Instance.PaintedPixels == 0)
+            {
+                // Restarting the pick button
+                RemainingClicks = 0;
+                if (RemainingClicks == 0)
+                {
+                    // Restarting the pick button
+                    gameUIController.RestartButtons();
+            
+                    // Checking if the player has used all rolls
+                    if (gameUIController.currentRolls == 0)
+                    {
+                        // Activating the game over object
+                        gameUIController.ShowGameOver();
+                    }
+                }
+
+                break;
+            }
             
             if(tile && PixelGeneratorController.Instance.Pixels[index].a == 0.5f)
             {
                 RemovePixels(tpos, width);
                 RemainingClicks--;
 
-                if (RemainingClicks == 0) break;
+                if (RemainingClicks == 0)
+                {
+                    // Restarting the pick button
+                    gameUIController.RestartButtons();
+            
+                    // Checking if the player has used all rolls
+                    if (gameUIController.currentRolls == 0)
+                    {
+                        // Activating the game over object
+                        gameUIController.ShowGameOver();
+                    }
+
+                    break;
+                }
             }
         }
     }

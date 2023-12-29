@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 public class PixelGeneratorController : MonoBehaviour
 {
     public static PixelGeneratorController Instance { get; private set; }
-    public int PaintedPixels { get; set; }
+    public int PaintedPixels;
     [SerializeField] public Sprite imageSprite;
     [SerializeField] private Tilemap imageMap;
     [SerializeField] private Tile tilePixel;

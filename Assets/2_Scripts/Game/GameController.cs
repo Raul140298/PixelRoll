@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,11 @@ namespace Game
 		void Awake()
 		{
 			instance = this;
+		}
+
+		private void Start()
+		{
+			Feedback.Do(eFeedbackType.Juego);
 		}
 
 		public Tilemap TileMap => tileMap;

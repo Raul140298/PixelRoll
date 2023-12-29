@@ -11,6 +11,10 @@ public class GameUIController : MonoBehaviour
     public Button rollDice;
     public Button sixFacesDice;
     public GameObject[] diceObjects;
+    
+    public GameObject secondDice;
+    public TMPro.TextMeshProUGUI result2Text;
+    
     private int _selectedDiceFaces;
     public TMPro.TextMeshProUGUI resultText;
     public TMPro.TextMeshProUGUI sixFacesResultText;
@@ -65,12 +69,22 @@ public class GameUIController : MonoBehaviour
         rollDice.gameObject.SetActive(false);
         resultText.gameObject.SetActive(false);
         sixFacesDice.gameObject.SetActive(false);
-        sixFacesResultText.gameObject.SetActive(false);
+        
+        result2Text.gameObject.SetActive(false);
+        secondDice.gameObject.SetActive(false);
+        
+        if(_selectedDiceFaces != 0)
+            diceObjects[System.Array.IndexOf(_diceFaces, _selectedDiceFaces)].SetActive(false);
+        
+        if(GameInputController.Instance.mode != 5 &&
+           GameInputController.Instance.mode != 6) sixFacesResultText.gameObject.SetActive(false);
         GameInputController.Instance.mode = 0;
     }
 
     private void OnPickDiceClick()
     {
+        Feedback.Do(eFeedbackType.Punch2);
+        
         // Checking if the player can still roll the dice
         if (currentRolls > 0)
         {
@@ -96,15 +110,30 @@ public class GameUIController : MonoBehaviour
 
     private void OnRollDiceClick()
     {
+        StartCoroutine(CRTOnRollDiceClick());
+    }
+
+    IEnumerator CRTOnRollDiceClick()
+    {
+        Feedback.Do(eFeedbackType.RollDice);
+        diceObjects[System.Array.IndexOf(_diceFaces, _selectedDiceFaces)].GetComponent<Animator>().SetBool("Roll", true);
+        
         // Deactivating the "Roll Dice" button
         rollDice.gameObject.SetActive(false);
+        sixFacesResultText.gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(1f);
+        
+        secondDice.SetActive(true);
+        
+        diceObjects[System.Array.IndexOf(_diceFaces, _selectedDiceFaces)].GetComponent<Animator>().SetBool("Roll", false);
         
         // Rolling the selected dice and logging the result
         _rollDiceResult = DiceHelper.ThrowDice(_selectedDiceFaces);
         Debug.Log("Rolled a " + _rollDiceResult);
         
         // Displaying the result on the screen
-        resultText.text = "Obtuviste un " + _rollDiceResult;
+        resultText.text = _rollDiceResult.ToString();
         // Activating the result text
         resultText.gameObject.SetActive(true);
         
@@ -125,26 +154,68 @@ public class GameUIController : MonoBehaviour
 
     private void OnSixFacesDiceClick()
     {
-        // Deactivating the "Six Faces Dice" button
+        StartCoroutine(CRTOnSixFacesDiceClick());
+    }
+
+    IEnumerator CRTOnSixFacesDiceClick()
+    {
+        Feedback.Do(eFeedbackType.RollDice);
+        secondDice.GetComponent<Animator>().SetBool("Roll", true);
+        
+        // Deactivating the "Roll Dice" button
         sixFacesDice.gameObject.SetActive(false);
 
+        yield return new WaitForSeconds(1f);
+        
+        
+        
         // Rolling a 3 faces dice
-        GameInputController.Instance.mode = DiceHelper.ThrowDice(3);
+
+        int newMode = 0;
+        
+        while (true)
+        {
+            newMode = DiceHelper.ThrowDice(6);
+            if (GameInputController.Instance.lastMode == 5 && newMode == 5) continue;
+            if (_rollDiceResult > 10 && newMode == 2 || newMode == 3) continue;
+            if (_rollDiceResult <= 120 && newMode == 6) continue;
+            if( newMode == 4 || newMode == 5) continue;
+            
+            break;
+        }
+        
+        GameInputController.Instance.lastMode = GameInputController.Instance.mode;
+        GameInputController.Instance.mode = newMode;
+        
+        result2Text.text = newMode.ToString();
+        result2Text.gameObject.SetActive(true);
+        
         var mode = GameInputController.Instance.mode;
         Debug.Log("Rolled a " + mode);
 
         // Displaying the result on the screen
         sixFacesResultText.text = mode switch
         {
-            1 => "Obtuviste un 1. Cada click pinta " + _rollDiceResult.ToString() + " pixeles.",
-            2 => "Obtuviste un 2. Cada click pinta " + _rollDiceResult.ToString() + " columnas.",
-            3 => "Obtuviste un 3. Cada click pinta " + _rollDiceResult.ToString() + " filas.",
-            6 => "Obtuviste un 6. Se despintaron " + _rollDiceResult.ToString() + " pixeles.",
+            1 => "1: Pinta " + _rollDiceResult.ToString() + (_rollDiceResult == 1 ? " pixel" : " pixeles"),
+            2 => "2: Pinta " + _rollDiceResult.ToString() + (_rollDiceResult == 1 ? " columna" : " columnas"),
+            3 => "3: Pinta " + _rollDiceResult.ToString() + (_rollDiceResult == 1 ? " fila" : " filas"),
+            4 => "4: No hace nada por ahora",
+            5 => "5: Tu siguiente turno será con con temblor",
+            6 => "6: Se despintó " + _rollDiceResult.ToString() + (_rollDiceResult == 1 ? " pixel" : " pixeles."),
             _ => sixFacesResultText.text
         };
         
         // Activating the result text
         sixFacesResultText.gameObject.SetActive(true);
+
+        if (mode == 6)
+        {
+            GameInputController.Instance.UnpaintRandomly();
+        }
+        else if (mode == 5)
+        {
+            GameInputController.Instance.ShakeImage();
+        }
     }
 
     private int GetRandomDiceFace()
