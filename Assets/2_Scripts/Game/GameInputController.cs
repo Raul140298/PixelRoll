@@ -1,4 +1,3 @@
-using System.Linq;
 using Game;
 using UnityEngine;
 using UnityEngine.Events;
@@ -76,7 +75,7 @@ public class GameInputController : MonoBehaviour
             // Calculating the tile position from the mouse click
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var tpos = GameController.Instance.TileMap.WorldToCell(worldPoint);
-            _mode = 2;
+            _mode = 3;
             
             // Selecting the paint mode
             SelectPaintMode(tpos, _mode);
@@ -110,6 +109,15 @@ public class GameInputController : MonoBehaviour
             case 3:
                 PaintRow(tpos);
                 break;
+            case 4:
+                Fill(tpos);
+                break;
+            case 5:
+                ShakeImage();
+                break;
+            case 6:
+                UnpaintRandomly();
+                break;
             default:
                 return;
         }
@@ -118,10 +126,29 @@ public class GameInputController : MonoBehaviour
     private static void ManagePixels(Vector3Int tpos, int width)
     {
         var index = tpos.y * width + tpos.x;
-        if (PixelGeneratorController.Instance.Pixels[index].a == 0)return;
+        if (PixelGeneratorController.Instance.Pixels[index].a == 0) return;
         GameController.Instance.TileMap.SetColor(tpos, PixelGeneratorController.Instance.Pixels[index]);
         PixelGeneratorController.Instance.PaintedPixels++;
-        PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0));
+        PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0.5f));
+    }
+    
+    private static void RemovePixels(Vector3Int tpos, int width)
+    {
+        var index = tpos.y * width + tpos.x;
+        if (PixelGeneratorController.Instance.Pixels[index].a <= 0.5f) return;
+        PixelGeneratorController.Instance.SetPixelColor(index, GameController.Instance.TileMap.GetColor(tpos));
+        PixelGeneratorController.Instance.PaintedPixels--;
+        GameController.Instance.TileMap.SetColor(tpos, new Color(1, 1, 1, 0.5f));
+    }
+    
+    private static void Fill(Vector3Int tpos)
+    {
+        
+    }
+    
+    private static void ShakeImage()
+    {
+        
     }
     
     private void PaintPixel(Vector3Int tpos)
@@ -132,21 +159,8 @@ public class GameInputController : MonoBehaviour
         {
             // Retrieving the original color of the pixel from the Pixels array
             var width = PixelGeneratorController.Instance.imageSprite.texture.width;
-            var index = tpos.y * width + tpos.x;
 
-            // Checking if the pixel is transparent and skipping it
-            if (PixelGeneratorController.Instance.Pixels[index].a == 0) return;
-                
-            // Applying the original color to the pixel
-            GameController.Instance.TileMap.SetColor(tpos, PixelGeneratorController.Instance.Pixels[index]);
-            
-            Debug.Log(GameController.Instance.TileMap.GetColor(tpos));
-                
-            // Incrementing PaintedPixels
-            PixelGeneratorController.Instance.PaintedPixels++;
-
-            // Changing the pixel color in the array to transparent
-            PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0));
+            ManagePixels(tpos, width);
             
             RemainingClicks--;
         }
@@ -168,18 +182,32 @@ public class GameInputController : MonoBehaviour
         if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a == 0) return;
         
         // Iterating through the column
-        for (var i = 0; i < height; i++)
+        for (var i = position.y + 1; i < height; i++)
         {
             var tpos = new Vector3Int(position.x, i, position.z);
             var tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
 
             //Checking if the tile is not null
-            if (!tile) continue;
+            if (!tile) break;
             
             // Managing the pixel array and the tilemap
             ManagePixels(tpos, width);
             painted = true;
         }
+        
+        for (var i = position.y; i >= 0; i--)
+        {
+            var tpos = new Vector3Int(position.x, i, position.z);
+            var tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
+
+            //Checking if the tile is not null
+            if (!tile) break;
+            
+            // Managing the pixel array and the tilemap
+            ManagePixels(tpos, width);
+            painted = true;
+        }
+        
         // Checking if a column was painted and decrementing the remaining clicks
         if (painted) RemainingClicks--;
         
@@ -202,23 +230,55 @@ public class GameInputController : MonoBehaviour
         if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a == 0) return;
         
         // Iterating through the row
-        for (var i = 0; i < width; i++)
+        for (var i = position.x + 1; i < width; i++)
         {
             var tpos = new Vector3Int(i, position.y, position.z);
             Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
 
             // Checking if the tile is not null
-            if (!tile) continue;
+            if (!tile) break;
             
             // Managing the pixel array and the tilemap
             ManagePixels(tpos, width);
             painted = true;
         }
+        
+        for (var i = position.x; i >= 0; i--)
+        {
+            var tpos = new Vector3Int(i, position.y, position.z);
+            Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
+
+            // Checking if the tile is not null
+            if (!tile) break;
+            
+            // Managing the pixel array and the tilemap
+            ManagePixels(tpos, width);
+            painted = true;
+        }
+        
         // Checking if a column was painted and decrementing the remaining clicks
         if (painted) RemainingClicks--;
         
         // Checking if the game is over
         CheckGameOver();
+    }
+    
+    private void UnpaintRandomly()
+    {
+        var width = PixelGeneratorController.Instance.imageSprite.texture.width;
+        var height = PixelGeneratorController.Instance.imageSprite.texture.height;
+        
+        while (true)
+        {
+            Vector3Int tpos = new Vector3Int(Random.Range(0, width), Random.Range(0, height));
+            Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
+            var index = tpos.y * width + tpos.x;
+            
+            if(tile && PixelGeneratorController.Instance.Pixels[index].a != 0.5f)
+            {
+                RemovePixels(tpos, width);
+            }
+        }
     }
     
     private void CheckGameOver()

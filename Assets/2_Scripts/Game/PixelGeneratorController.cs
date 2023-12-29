@@ -58,7 +58,7 @@ public class PixelGeneratorController : MonoBehaviour
                 imageMap.SetTileFlags(pos, TileFlags.None);
                 
                 // Setting the color to white
-                imageMap.SetColor(pos, Color.white);
+                imageMap.SetColor(pos, new Color(1,1,1,0.5f));
             }
         }
     }
