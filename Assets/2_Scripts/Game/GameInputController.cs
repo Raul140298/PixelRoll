@@ -75,7 +75,7 @@ public class GameInputController : MonoBehaviour
             // Calculating the tile position from the mouse click
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var tpos = GameController.Instance.TileMap.WorldToCell(worldPoint);
-            _mode = 3;
+            _mode = 2;
             
             // Selecting the paint mode
             SelectPaintMode(tpos, _mode);
@@ -123,19 +123,21 @@ public class GameInputController : MonoBehaviour
         }
     }
 
-    private static void ManagePixels(Vector3Int tpos, int width)
+    private static bool ManagePixels(Vector3Int tpos, int width)
     {
         var index = tpos.y * width + tpos.x;
-        if (PixelGeneratorController.Instance.Pixels[index].a == 0) return;
+        if (PixelGeneratorController.Instance.Pixels[index].a < 0.6f) return false;
         GameController.Instance.TileMap.SetColor(tpos, PixelGeneratorController.Instance.Pixels[index]);
         PixelGeneratorController.Instance.PaintedPixels++;
         PixelGeneratorController.Instance.SetPixelColor(index, new Color(0, 0, 0, 0.5f));
+        
+        return true;
     }
     
     private static void RemovePixels(Vector3Int tpos, int width)
     {
         var index = tpos.y * width + tpos.x;
-        if (PixelGeneratorController.Instance.Pixels[index].a <= 0.5f) return;
+        if (PixelGeneratorController.Instance.Pixels[index].a != 0.5f) return;
         PixelGeneratorController.Instance.SetPixelColor(index, GameController.Instance.TileMap.GetColor(tpos));
         PixelGeneratorController.Instance.PaintedPixels--;
         GameController.Instance.TileMap.SetColor(tpos, new Color(1, 1, 1, 0.5f));
@@ -160,7 +162,7 @@ public class GameInputController : MonoBehaviour
             // Retrieving the original color of the pixel from the Pixels array
             var width = PixelGeneratorController.Instance.imageSprite.texture.width;
 
-            ManagePixels(tpos, width);
+            if (!ManagePixels(tpos, width)) return;
             
             RemainingClicks--;
         }
@@ -168,7 +170,6 @@ public class GameInputController : MonoBehaviour
 
     private void PaintColumn(Vector3Int position)
     {
-        
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
         var painted = false;
@@ -179,7 +180,7 @@ public class GameInputController : MonoBehaviour
         var initialPixelIndex = position.y * width + position.x;
     
         // Checking if the initially clicked pixel is transparent and skipping it
-        if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a == 0) return;
+        if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a < 0.6f) return;
         
         // Iterating through the column
         for (var i = position.y + 1; i < height; i++)
@@ -227,7 +228,7 @@ public class GameInputController : MonoBehaviour
         var initialPixelIndex = position.y * width + position.x;
     
         // Checking if the initially clicked pixel is transparent and skipping it
-        if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a == 0) return;
+        if (PixelGeneratorController.Instance.Pixels[initialPixelIndex].a < 0.6f) return;
         
         // Iterating through the row
         for (var i = position.x + 1; i < width; i++)
@@ -267,16 +268,23 @@ public class GameInputController : MonoBehaviour
     {
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
+
+        RemainingClicks = 20;
         
         while (true)
         {
+            Debug.Log("XD");
+            
             Vector3Int tpos = new Vector3Int(Random.Range(0, width), Random.Range(0, height));
             Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
             var index = tpos.y * width + tpos.x;
             
-            if(tile && PixelGeneratorController.Instance.Pixels[index].a != 0.5f)
+            if(tile && PixelGeneratorController.Instance.Pixels[index].a == 0.5f)
             {
                 RemovePixels(tpos, width);
+                RemainingClicks--;
+
+                if (RemainingClicks == 0) break;
             }
         }
     }

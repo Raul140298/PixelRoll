@@ -124,7 +124,6 @@ public class GameUIController : MonoBehaviour
     {
         // Finding the index of the dice with the given number of faces
         var index = System.Array.IndexOf(_diceFaces, faces);
-        Debug.Log("Index of dice: " + index);
 
         // Deactivating all dice
         foreach (var dice in diceObjects)
