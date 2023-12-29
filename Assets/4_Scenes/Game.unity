@@ -792,7 +792,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PaintedPixels: 0
-  imageSprite: {fileID: 21300000, guid: 9c114849ec579df4eb9cd407f37ac669, type: 3}
+  imageSprites:
+  - {fileID: 21300000, guid: 9c114849ec579df4eb9cd407f37ac669, type: 3}
+  - {fileID: 21300000, guid: 9a3229c9cf3da99448edf259b5d34089, type: 3}
+  imageSprite: {fileID: 0}
   imageMap: {fileID: 1603878151}
   tilePixel: {fileID: 11400000, guid: e85dbf484f4eccb4ca9a0c5ce53fd94d, type: 2}
 --- !u!4 &536495881

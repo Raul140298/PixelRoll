@@ -8,6 +8,7 @@ public class PixelGeneratorController : MonoBehaviour
 {
     public static PixelGeneratorController Instance { get; private set; }
     public int PaintedPixels;
+    [SerializeField] public Sprite[] imageSprites;
     [SerializeField] public Sprite imageSprite;
     [SerializeField] private Tilemap imageMap;
     [SerializeField] private Tile tilePixel;
@@ -33,6 +34,9 @@ public class PixelGeneratorController : MonoBehaviour
 
     private void Start()
     {
+        // Assigning a random image sprite to the imageSprite variable
+        imageSprite = imageSprites[UnityEngine.Random.Range(0, imageSprites.Length)];
+        
         Texture2D tex = SpriteToTexture2D(imageSprite);
         Pixels = tex.GetPixels();
         int width = tex.width;
