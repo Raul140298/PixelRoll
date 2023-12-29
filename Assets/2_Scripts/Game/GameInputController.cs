@@ -7,7 +7,7 @@ public class GameInputController : MonoBehaviour
 {
     [SerializeField] private GameUIController gameUIController;
     private static GameInputController _instance;
-    private int _mode = 0;
+    public int mode = 0;
     private int RemainingClicks { get; set; }
     
     // Singleton pattern (restricts the instantiation of a class to one object)
@@ -75,10 +75,9 @@ public class GameInputController : MonoBehaviour
             // Calculating the tile position from the mouse click
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var tpos = GameController.Instance.TileMap.WorldToCell(worldPoint);
-            _mode = 2;
             
             // Selecting the paint mode
-            SelectPaintMode(tpos, _mode);
+            SelectPaintMode(tpos, mode);
             
             // Checking if the player has clicks remaining
             if (RemainingClicks > 0) return;
@@ -268,13 +267,9 @@ public class GameInputController : MonoBehaviour
     {
         var width = PixelGeneratorController.Instance.imageSprite.texture.width;
         var height = PixelGeneratorController.Instance.imageSprite.texture.height;
-
-        RemainingClicks = 20;
         
         while (true)
         {
-            Debug.Log("XD");
-            
             Vector3Int tpos = new Vector3Int(Random.Range(0, width), Random.Range(0, height));
             Tile tile = GameController.Instance.TileMap.GetTile<Tile>(tpos);
             var index = tpos.y * width + tpos.x;

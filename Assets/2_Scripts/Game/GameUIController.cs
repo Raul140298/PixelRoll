@@ -6,16 +6,19 @@ using UnityEngine.UI;
 
 public class GameUIController : MonoBehaviour
 {
-    private readonly int[] _diceFaces = {3,4,6,12,20,60,120};
+    private readonly int[] _diceFaces = {3,4,6,12,20};
     public Button pickDice;
-    public Button rollDice; 
+    public Button rollDice;
+    public Button sixFacesDice;
     public GameObject[] diceObjects;
     private int _selectedDiceFaces;
     public TMPro.TextMeshProUGUI resultText;
+    public TMPro.TextMeshProUGUI sixFacesResultText;
     [SerializeField] private int maxRolls = 3;
     public int currentRolls;
     public GameObject gameOverObject;
     public TMPro.TextMeshProUGUI gameOverPercentageText;
+    private int _rollDiceResult = 0;
     
     private void Awake()
     {
@@ -36,9 +39,10 @@ public class GameUIController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        // Adding a listener to the button click event
+        // Adding a listener to every button click event
         pickDice.onClick.AddListener(OnPickDiceClick);
         rollDice.onClick.AddListener(OnRollDiceClick);
+        sixFacesDice.onClick.AddListener(OnSixFacesDiceClick);
         
         // Adding the listener to the OnAllClicksUsed event
         if (GameInputController.Instance != null)
@@ -56,10 +60,13 @@ public class GameUIController : MonoBehaviour
 
     public void RestartButtons()
     {
-        // Deactivating the "Roll Dice" button and the result text
+        // Deactivating the "Roll Dice" button, the result text and the "Six Faces Dice" button and result text
+        pickDice.gameObject.SetActive(true);
         rollDice.gameObject.SetActive(false);
         resultText.gameObject.SetActive(false);
-        pickDice.gameObject.SetActive(true);
+        sixFacesDice.gameObject.SetActive(false);
+        sixFacesResultText.gameObject.SetActive(false);
+        GameInputController.Instance.mode = 0;
     }
 
     private void OnPickDiceClick()
@@ -93,11 +100,11 @@ public class GameUIController : MonoBehaviour
         rollDice.gameObject.SetActive(false);
         
         // Rolling the selected dice and logging the result
-        var result = DiceHelper.ThrowDice(_selectedDiceFaces);
-        Debug.Log("Rolled a " + result);
+        _rollDiceResult = DiceHelper.ThrowDice(_selectedDiceFaces);
+        Debug.Log("Rolled a " + _rollDiceResult);
         
         // Displaying the result on the screen
-        resultText.text = "Obtuviste un " + result;
+        resultText.text = "Obtuviste un " + _rollDiceResult;
         // Activating the result text
         resultText.gameObject.SetActive(true);
         
@@ -105,12 +112,39 @@ public class GameUIController : MonoBehaviour
         if (GameInputController.Instance != null)
         {
             // Setting the maximum number of clicks
-            GameInputController.Instance.SetMaxPixels(result);
+            GameInputController.Instance.SetMaxPixels(_rollDiceResult);
         }
         else
         {
             Debug.LogError("GameInputController instance is null");
         }
+        
+        // Activating the "Six Faces Dice" button
+        sixFacesDice.gameObject.SetActive(true);
+    }
+
+    private void OnSixFacesDiceClick()
+    {
+        // Deactivating the "Six Faces Dice" button
+        sixFacesDice.gameObject.SetActive(false);
+
+        // Rolling a 3 faces dice
+        GameInputController.Instance.mode = DiceHelper.ThrowDice(3);
+        var mode = GameInputController.Instance.mode;
+        Debug.Log("Rolled a " + mode);
+
+        // Displaying the result on the screen
+        sixFacesResultText.text = mode switch
+        {
+            1 => "Obtuviste un 1. Cada click pinta " + _rollDiceResult.ToString() + " pixeles.",
+            2 => "Obtuviste un 2. Cada click pinta " + _rollDiceResult.ToString() + " columnas.",
+            3 => "Obtuviste un 3. Cada click pinta " + _rollDiceResult.ToString() + " filas.",
+            6 => "Obtuviste un 6. Se despintaron " + _rollDiceResult.ToString() + " pixeles.",
+            _ => sixFacesResultText.text
+        };
+        
+        // Activating the result text
+        sixFacesResultText.gameObject.SetActive(true);
     }
 
     private int GetRandomDiceFace()
