@@ -85,13 +85,16 @@ public class GameInputController : MonoBehaviour
             if (RemainingClicks > 0) return;
             
             // Restarting the pick button
-            gameUIController.RestartButtons();
+            if (!gameUIController.gameOver)
+            {
+                gameUIController.RestartButtons();
+            }
             
             // Checking if the player has used all rolls
             if (gameUIController.currentRolls == 0)
             {
                 // Activating the game over object
-                gameUIController.ShowGameOver();
+                // gameUIController.ShowGameOver();
             }
         }
     }
@@ -166,6 +169,8 @@ public class GameInputController : MonoBehaviour
             
             RemainingClicks--;
         }
+        // Checking if the game is over
+        CheckGameOver();
     }
 
     private void PaintColumn(Vector3Int position)

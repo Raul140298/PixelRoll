@@ -7,10 +7,13 @@ using UnityEngine.UI;
 public class GameUIController : MonoBehaviour
 {
     private readonly int[] _diceFaces = {3,4,6,12,20};
+    public GameObject[] diceObjects;
+    
     public Button pickDice;
     public Button rollDice;
     public Button sixFacesDice;
-    public GameObject[] diceObjects;
+    public Button restartGame;
+    public Button quitGame;
     
     public GameObject secondDice;
     public TMPro.TextMeshProUGUI result2Text;
@@ -20,6 +23,7 @@ public class GameUIController : MonoBehaviour
     public TMPro.TextMeshProUGUI sixFacesResultText;
     [SerializeField] private int maxRolls = 3;
     public int currentRolls;
+    public bool gameOver;
     public GameObject gameOverObject;
     public TMPro.TextMeshProUGUI gameOverPercentageText;
     private int _rollDiceResult = 0;
@@ -47,6 +51,8 @@ public class GameUIController : MonoBehaviour
         pickDice.onClick.AddListener(OnPickDiceClick);
         rollDice.onClick.AddListener(OnRollDiceClick);
         sixFacesDice.onClick.AddListener(OnSixFacesDiceClick);
+        restartGame.onClick.AddListener(OnRestartGameClick);
+        quitGame.onClick.AddListener(OnQuitGameClick);
         
         // Adding the listener to the OnAllClicksUsed event
         if (GameInputController.Instance != null)
@@ -60,6 +66,8 @@ public class GameUIController : MonoBehaviour
 
         // Restarting the buttons
         RestartButtons();
+
+        gameOver = false;
     }
 
     public void RestartButtons()
@@ -100,7 +108,7 @@ public class GameUIController : MonoBehaviour
             rollDice.gameObject.SetActive(true);
 
             // Decrementing the counter
-            currentRolls--;
+            // currentRolls--;
         }
         else
         {
@@ -177,7 +185,7 @@ public class GameUIController : MonoBehaviour
         {
             newMode = DiceHelper.ThrowDice(6);
             if (GameInputController.Instance.lastMode == 5 && newMode == 5) continue;
-            if (_rollDiceResult > 10 && newMode == 2 || newMode == 3) continue;
+            if (_rollDiceResult > 10 && newMode is 2 or 3) continue;
             if (_rollDiceResult <= 120 && newMode == 6) continue;
             if( newMode == 4 || newMode == 5) continue;
             
@@ -255,6 +263,9 @@ public class GameUIController : MonoBehaviour
     
     public void ShowGameOver()
     {
+        // Restarting the buttons
+        RestartButtons();
+        
         // Calculating the percentage of pixels painted
         var percentage = (float)PixelGeneratorController.Instance.PaintedPixels / (float)
             PixelGeneratorController.Instance.NonTransparentPixels * 100f;
@@ -262,7 +273,33 @@ public class GameUIController : MonoBehaviour
         // Updating the game over percentage text
         gameOverPercentageText.text = "Has pintado el " + percentage.ToString("0.00") + "% de la imagen.";
 
+        // Deactivating the "Pick Dice" button
+        pickDice.gameObject.SetActive(false);
+        
         // Activating the game over object
         gameOverObject.SetActive(true);
+        
+        // Activating the "Restart" button
+        restartGame.gameObject.SetActive(true);
+        
+        // Activating the "Quit" button
+        quitGame.gameObject.SetActive(true);
+        
+        gameOver = true;
+    }
+
+    private static void OnRestartGameClick()
+    {
+        // Getting the current scene name
+        var sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+        // Reloading the current scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+    }
+    
+    private static void OnQuitGameClick()
+    {
+        // Exiting the game
+        Application.Quit();
     }
 }
