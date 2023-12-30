@@ -21,7 +21,6 @@ public class GameUIController : MonoBehaviour
     private int _selectedDiceFaces;
     public TMPro.TextMeshProUGUI resultText;
     public TMPro.TextMeshProUGUI sixFacesResultText;
-    [SerializeField] private int maxRolls = 3;
     public int currentRolls;
     public bool gameOver;
     public GameObject gameOverObject;
@@ -31,7 +30,7 @@ public class GameUIController : MonoBehaviour
     private void Awake()
     {
         // Initializing the counter in the Awake method
-        currentRolls = maxRolls;
+        currentRolls = 0;
         
         // Adding a listener to the OnAllClicksUsed event
         if (GameInputController.Instance != null)
@@ -93,27 +92,20 @@ public class GameUIController : MonoBehaviour
     {
         Feedback.Do(eFeedbackType.Punch2);
         
-        // Checking if the player can still roll the dice
-        if (currentRolls > 0)
-        {
-            // Getting a random number of faces from the dices array
-            _selectedDiceFaces = GetRandomDiceFace();
-            Debug.Log("Selected dice faces: " + _selectedDiceFaces);
+        
+        // Getting a random number of faces from the dices array
+        _selectedDiceFaces = GetRandomDiceFace();
+        Debug.Log("Selected dice faces: " + _selectedDiceFaces);
 
-            // Showing the corresponding dice
-            ShowDice(_selectedDiceFaces);
+        // Showing the corresponding dice
+        ShowDice(_selectedDiceFaces);
 
-            // Deactivating the "Pick Dice" button and activating the "Roll Dice" button
-            pickDice.gameObject.SetActive(false);
-            rollDice.gameObject.SetActive(true);
+        // Deactivating the "Pick Dice" button and activating the "Roll Dice" button
+        pickDice.gameObject.SetActive(false);
+        rollDice.gameObject.SetActive(true);
 
-            // Decrementing the counter
-            // currentRolls--;
-        }
-        else
-        {
-            Debug.Log("You have reached the maximum number of rolls.");
-        }
+        // Increasing the counter
+        currentRolls++;
     }
 
     private void OnRollDiceClick()
@@ -174,10 +166,6 @@ public class GameUIController : MonoBehaviour
         sixFacesDice.gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1f);
-        
-        
-        
-        // Rolling a 3 faces dice
 
         int newMode = 0;
         
@@ -271,7 +259,7 @@ public class GameUIController : MonoBehaviour
             PixelGeneratorController.Instance.NonTransparentPixels * 100f;
 
         // Updating the game over percentage text
-        gameOverPercentageText.text = "Has pintado el " + percentage.ToString("0.00") + "% de la imagen.";
+        gameOverPercentageText.text = "Has pintado la imagen en " + currentRolls +" turnos";
 
         // Deactivating the "Pick Dice" button
         pickDice.gameObject.SetActive(false);
