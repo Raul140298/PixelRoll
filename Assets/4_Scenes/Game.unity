@@ -794,9 +794,9 @@ MonoBehaviour:
   PaintedPixels: 0
   imageSprites:
   - {fileID: 21300000, guid: 9c114849ec579df4eb9cd407f37ac669, type: 3}
-  - {fileID: 21300000, guid: 9a3229c9cf3da99448edf259b5d34089, type: 3}
   - {fileID: 21300000, guid: 6216b22f246c8ad4092e79baaf0e0311, type: 3}
   - {fileID: 21300000, guid: b36949915343b7b46b52b2e3dc61ccf4, type: 3}
+  - {fileID: 21300000, guid: a8dddbd74b57b0b4fa3e7c38b8f52d19, type: 3}
   imageSprite: {fileID: 0}
   imageMap: {fileID: 1603878151}
   tilePixel: {fileID: 11400000, guid: e85dbf484f4eccb4ca9a0c5ce53fd94d, type: 2}
@@ -1357,8 +1357,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -185,7 +185,7 @@ public class GameUIController : MonoBehaviour
         {
             newMode = DiceHelper.ThrowDice(6);
             if (GameInputController.Instance.lastMode == 5 && newMode == 5) continue;
-            if (_rollDiceResult > 10 && newMode is 2 or 3) continue;
+            // if (_rollDiceResult > 10 && newMode is 2 or 3) continue;
             if (_rollDiceResult <= 120 && newMode == 6) continue;
             if( newMode == 4 || newMode == 5) continue;
             
