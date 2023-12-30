@@ -1209,7 +1209,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lanza y Pinta
+  m_text: PintDados!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d51f0e33555f25c4698ec5410893c765, type: 2}
   m_sharedMaterial: {fileID: -1517895550004959596, guid: d51f0e33555f25c4698ec5410893c765,

@@ -795,6 +795,8 @@ MonoBehaviour:
   imageSprites:
   - {fileID: 21300000, guid: 9c114849ec579df4eb9cd407f37ac669, type: 3}
   - {fileID: 21300000, guid: 9a3229c9cf3da99448edf259b5d34089, type: 3}
+  - {fileID: 21300000, guid: 6216b22f246c8ad4092e79baaf0e0311, type: 3}
+  - {fileID: 21300000, guid: b36949915343b7b46b52b2e3dc61ccf4, type: 3}
   imageSprite: {fileID: 0}
   imageMap: {fileID: 1603878151}
   tilePixel: {fileID: 11400000, guid: e85dbf484f4eccb4ca9a0c5ce53fd94d, type: 2}
@@ -1856,7 +1858,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 54c75eedb27725e49b4f4ee531dcc7b7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 39ed5eab6fc87224bba9fc2d25673900, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
