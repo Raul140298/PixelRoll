@@ -794,7 +794,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9c114849ec579df4eb9cd407f37ac669, type: 3}
   - {fileID: 21300000, guid: 6216b22f246c8ad4092e79baaf0e0311, type: 3}
   - {fileID: 21300000, guid: a8dddbd74b57b0b4fa3e7c38b8f52d19, type: 3}
-  - {fileID: 21300000, guid: da7a4828ecd0bd74fa987c3e446c15c5, type: 3}
+  - {fileID: 21300000, guid: 6fc0068a5e901c142b255cefbd0343c5, type: 3}
   imageSprite: {fileID: 0}
   imageMap: {fileID: 1603878151}
   tilePixel: {fileID: 11400000, guid: e85dbf484f4eccb4ca9a0c5ce53fd94d, type: 2}
